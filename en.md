@@ -10,10 +10,16 @@ Create .env file in the project root folder and add your SuperJob API key there:
 
 Installing dependencies:
 - Python 3 must already be installed.
-- `pip install -r requirements.txt`
+
+```bash
+pip install -r requirements.txt
+```
 
 Run the project:
--  `python main.py`
+
+```bash
+python main.py
+```
 
 ## Project goal
 

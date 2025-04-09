@@ -10,10 +10,16 @@
 
 Установка зависимостей:
 - Python 3 должен быть уже установлен.
-- `pip install -r requirements.txt`
+
+```bash
+pip install -r requirements.txt
+```
 
 Запустите проект:
--  `python main.py`
+
+```bash
+python main.py
+```
 
 ## Цель проекта
 
