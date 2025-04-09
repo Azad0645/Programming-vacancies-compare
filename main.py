@@ -3,7 +3,6 @@ import requests
 from terminaltables import AsciiTable
 from dotenv import load_dotenv
 
-
 HH_MOSCOW_AREA_ID = 1
 
 
@@ -49,7 +48,7 @@ def analyze_hh(lang):
             "page": page
         }
         response = requests.get("https://api.hh.ru/vacancies", params=params)
-        if response.status_code != 200:
+        if not response.ok:
             break
         data = response.json()
         vacancies = data.get("items", [])
@@ -87,7 +86,7 @@ def analyze_superjob(lang, api_key):
             "town": "Москва"
         }
         response = requests.get("https://api.superjob.ru/2.0/vacancies/", headers=headers, params=params)
-        if response.status_code != 200:
+        if not response.ok:
             break
         data = response.json()
         vacancies = data.get("objects", [])
@@ -147,6 +146,7 @@ def main():
 
     table = AsciiTable(table_data, "Сравнение зарплат по языкам")
     print("\n" + table.table)
+
 
 if __name__ == "__main__":
     main()
