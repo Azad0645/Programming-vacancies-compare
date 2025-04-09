@@ -4,13 +4,6 @@ from terminaltables import AsciiTable
 from dotenv import load_dotenv
 
 
-load_dotenv()
-
-api_key = os.getenv("SUPERJOB_API_KEY")
-
-languages = ["Python", "Java", "JavaScript", "C#", "C++", "Go", "Ruby", "Swift", "PHP", "Kotlin"]
-
-
 def predict_rub_salary_hh(vacancy):
     salary = vacancy.get("salary")
     if salary and salary.get("currency") == "RUR":
@@ -77,7 +70,7 @@ def analyze_hh(lang):
     }
 
 
-def analyze_superjob(lang):
+def analyze_superjob(lang, api_key):
     headers = {"X-Api-App-Id": api_key}
     salaries = []
     page = 0
@@ -115,36 +108,42 @@ def analyze_superjob(lang):
     }
 
 
-hh_data = {}
-sj_data = {}
+def main():
+    load_dotenv()
+    api_key = os.getenv("SUPERJOB_API_KEY")
 
+    languages = ["Python", "Java", "JavaScript", "C#", "C++", "Go", "Ruby", "Swift", "PHP", "Kotlin"]
 
-table_data = [
-    ["Язык", "HH: найдено / обработано", "SJ: найдено / обработано", "Зарплата HH / SJ"]
-]
+    hh_data = {}
+    sj_data = {}
 
+    table_data = [
+        ["Язык", "HH: найдено / обработано", "SJ: найдено / обработано", "Зарплата HH / SJ"]
+    ]
 
-for lang in languages:
-    hh_data[lang] = analyze_hh(lang)
-    sj_data[lang] = analyze_superjob(lang)
-    hh = hh_data.get(lang, {})
-    sj = sj_data.get(lang, {})
+    for lang in languages:
+        hh_data[lang] = analyze_hh(lang)
+        sj_data[lang] = analyze_superjob(lang, api_key)
+        hh = hh_data.get(lang, {})
+        sj = sj_data.get(lang, {})
 
-    hh_found = hh.get("vacancies_found", 0)
-    hh_proc = hh.get("vacancies_processed", 0)
-    hh_salary = hh.get("average_salary", "—")
+        hh_found = hh.get("vacancies_found", 0)
+        hh_proc = hh.get("vacancies_processed", 0)
+        hh_salary = hh.get("average_salary", "—")
 
-    sj_found = sj.get("vacancies_found", 0)
-    sj_proc = sj.get("vacancies_processed", 0)
-    sj_salary = sj.get("average_salary", "—")
+        sj_found = sj.get("vacancies_found", 0)
+        sj_proc = sj.get("vacancies_processed", 0)
+        sj_salary = sj.get("average_salary", "—")
 
-    table_data.append([
-        lang,
-        f"{hh_found} / {hh_proc}",
-        f"{sj_found} / {sj_proc}",
-        f"{hh_salary} / {sj_salary}"
-    ])
+        table_data.append([
+            lang,
+            f"{hh_found} / {hh_proc}",
+            f"{sj_found} / {sj_proc}",
+            f"{hh_salary} / {sj_salary}"
+        ])
 
+    table = AsciiTable(table_data, "Сравнение зарплат по языкам")
+    print("\n" + table.table)
 
-table = AsciiTable(table_data, "Сравнение зарплат по языкам")
-print("\n" + table.table)
+if __name__ == "__main__":
+    main()
