@@ -50,16 +50,16 @@ def analyze_hh(lang):
         response = requests.get("https://api.hh.ru/vacancies", params=params)
         if not response.ok:
             break
-        data = response.json()
-        vacancies = data.get("items", [])
-        total_found = data.get("found", 0)
+        hh_response_data = response.json()
+        vacancies = hh_response_data.get("items", [])
+        total_found = hh_response_data.get("found", 0)
 
         for vacancy in vacancies:
             salary = predict_rub_salary_hh(vacancy)
             if salary:
                 salaries.append(salary)
 
-        if page >= data.get("pages", 0) - 1:
+        if page >= hh_response_data.get("pages", 0) - 1:
             break
         page += 1
 
@@ -88,8 +88,8 @@ def analyze_superjob(lang, api_key):
         response = requests.get("https://api.superjob.ru/2.0/vacancies/", headers=headers, params=params)
         if not response.ok:
             break
-        data = response.json()
-        vacancies = data.get("objects", [])
+        sj_response_data = response.json()
+        vacancies = sj_response_data.get("objects", [])
         total_found += len(vacancies)
 
         for vacancy in vacancies:
@@ -97,7 +97,7 @@ def analyze_superjob(lang, api_key):
             if salary:
                 salaries.append(salary)
 
-        if not data.get("more") or len(salaries) >= 2000:
+        if not sj_response_data.get("more") or len(salaries) >= 2000:
             break
         page += 1
 
@@ -116,26 +116,26 @@ def main():
 
     languages = ["Python", "Java", "JavaScript", "C#", "C++", "Go", "Ruby", "Swift", "PHP", "Kotlin"]
 
-    hh_data = {}
-    sj_data = {}
+    hh_stats = {}
+    sj_stats = {}
 
     table_data = [
         ["Язык", "HH: найдено / обработано", "SJ: найдено / обработано", "Зарплата HH / SJ"]
     ]
 
     for lang in languages:
-        hh_data[lang] = analyze_hh(lang)
-        sj_data[lang] = analyze_superjob(lang, api_key)
-        hh = hh_data.get(lang, {})
-        sj = sj_data.get(lang, {})
+        hh_stats[lang] = analyze_hh(lang)
+        sj_stats[lang] = analyze_superjob(lang, api_key)
+        hh_lang_stats = hh_stats.get(lang, {})
+        sj_lang_stats = sj_stats.get(lang, {})
 
-        hh_found = hh.get("vacancies_found", 0)
-        hh_proc = hh.get("vacancies_processed", 0)
-        hh_salary = hh.get("average_salary", "—")
+        hh_found = hh_lang_stats.get("vacancies_found", 0)
+        hh_proc = hh_lang_stats.get("vacancies_processed", 0)
+        hh_salary = hh_lang_stats.get("average_salary", "—")
 
-        sj_found = sj.get("vacancies_found", 0)
-        sj_proc = sj.get("vacancies_processed", 0)
-        sj_salary = sj.get("average_salary", "—")
+        sj_found = sj_lang_stats.get("vacancies_found", 0)
+        sj_proc = sj_lang_stats.get("vacancies_processed", 0)
+        sj_salary = sj_lang_stats.get("average_salary", "—")
 
         table_data.append([
             lang,
