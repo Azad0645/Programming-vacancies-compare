@@ -4,6 +4,9 @@ from terminaltables import AsciiTable
 from dotenv import load_dotenv
 
 
+HH_MOSCOW_AREA_ID = 1
+
+
 def predict_rub_salary_hh(vacancy):
     salary = vacancy.get("salary")
     if salary and salary.get("currency") == "RUR":
@@ -41,7 +44,7 @@ def analyze_hh(lang):
     while True:
         params = {
             "text": f"{lang} программист",
-            "area": 1,
+            "area": HH_MOSCOW_AREA_ID,
             "per_page": per_page,
             "page": page
         }
