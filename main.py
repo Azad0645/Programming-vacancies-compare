@@ -6,25 +6,9 @@ from dotenv import load_dotenv
 HH_MOSCOW_AREA_ID = 1
 
 
-def predict_rub_salary_hh(vacancy):
-    salary = vacancy.get("salary")
-    if salary and salary.get("currency") == "RUR":
-        salary_from = salary.get("from")
-        salary_to = salary.get("to")
-        if salary_from and salary_to:
-            return (salary_from + salary_to) / 2
-        elif salary_from:
-            return salary_from
-        elif salary_to:
-            return salary_to * 0.8
-    return None
-
-
-def predict_rub_salary_sj(vacancy):
-    if vacancy.get("currency") != "rub":
+def predict_salary(currency, expected_currency, salary_from, salary_to):
+    if currency != expected_currency:
         return None
-    salary_from = vacancy.get("payment_from")
-    salary_to = vacancy.get("payment_to")
     if salary_from and salary_to:
         return (salary_from + salary_to) / 2
     elif salary_from:
@@ -32,6 +16,27 @@ def predict_rub_salary_sj(vacancy):
     elif salary_to:
         return salary_to * 0.8
     return None
+
+
+def predict_rub_salary_hh(vacancy):
+    salary = vacancy.get("salary")
+    if not salary:
+        return None
+    return predict_salary(
+        currency=salary.get("currency"),
+        expected_currency="RUR",
+        salary_from=salary.get("from"),
+        salary_to=salary.get("to")
+    )
+
+
+def predict_rub_salary_sj(vacancy):
+    return predict_salary(
+        currency=vacancy.get("currency"),
+        expected_currency="rub",
+        salary_from=vacancy.get("payment_from"),
+        salary_to=vacancy.get("payment_to")
+    )
 
 
 def analyze_hh(lang):
