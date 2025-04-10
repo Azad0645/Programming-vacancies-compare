@@ -95,14 +95,16 @@ def analyze_superjob(lang, api_key):
             break
         sj_response_data = response.json()
         vacancies = sj_response_data.get("objects", [])
-        total_found += len(vacancies)
+
+        if page == 0:
+            total_found = sj_response_data.get("total", 0)
 
         for vacancy in vacancies:
             salary = predict_rub_salary_sj(vacancy)
             if salary:
                 salaries.append(salary)
 
-        if not sj_response_data.get("more") or len(salaries) >= 2000:
+        if not sj_response_data.get("more"):
             break
         page += 1
 
