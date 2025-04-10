@@ -115,22 +115,12 @@ def analyze_superjob(lang, api_key):
     }
 
 
-def main():
-    load_dotenv()
-    api_key = os.getenv("SUPERJOB_API_KEY")
-
-    languages = ["Python", "Java", "JavaScript", "C#", "C++", "Go", "Ruby", "Swift", "PHP", "Kotlin"]
-
-    hh_stats = {}
-    sj_stats = {}
-
+def build_salary_table(hh_stats, sj_stats, languages):
     table_data = [
         ["Язык", "HH: найдено / обработано", "SJ: найдено / обработано", "Зарплата HH / SJ"]
     ]
 
     for lang in languages:
-        hh_stats[lang] = analyze_hh(lang)
-        sj_stats[lang] = analyze_superjob(lang, api_key)
         hh_lang_stats = hh_stats.get(lang, {})
         sj_lang_stats = sj_stats.get(lang, {})
 
@@ -149,6 +139,23 @@ def main():
             f"{hh_salary} / {sj_salary}"
         ])
 
+    return table_data
+
+
+def main():
+    load_dotenv()
+    api_key = os.getenv("SUPERJOB_API_KEY")
+
+    languages = ["Python", "Java", "JavaScript", "C#", "C++", "Go", "Ruby", "Swift", "PHP", "Kotlin"]
+
+    hh_stats = {}
+    sj_stats = {}
+
+    for lang in languages:
+        hh_stats[lang] = analyze_hh(lang)
+        sj_stats[lang] = analyze_superjob(lang, api_key)
+
+    table_data = build_salary_table(hh_stats, sj_stats, languages)
     table = AsciiTable(table_data, "Сравнение зарплат по языкам")
     print("\n" + table.table)
 
